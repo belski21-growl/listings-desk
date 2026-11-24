@@ -1,0 +1,87 @@
+{
+  "kind": "telegraph-h2-listings-desk-risk-memo",
+  "network": "testnet",
+  "token": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+  "chain": "ethereum",
+  "block": 26488113,
+  "entity": "Centre Consortium (USDC)",
+  "handle": "@circle",
+  "question": "Should we list this token?",
+  "verdict": "LIST",
+  "risk_score": 18,
+  "risk_max": 100,
+  "checks": [
+    {
+      "intent": "SMART_CONTRACT_AUDIT",
+      "points": 13,
+      "flags": [
+        "risk=medium",
+        "pause/blacklist"
+      ],
+      "miner": [
+        "mock-miner"
+      ],
+      "cost_uusdc": 10000,
+      "latency_ms": 52,
+      "signal_hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "signal_verified": false
+    },
+    {
+      "intent": "ONCHAIN_METRIC_VERIFY",
+      "points": 0,
+      "flags": [
+        "native balance 0 gwei (normal for a token contract)"
+      ],
+      "miner": [
+        "mock-miner"
+      ],
+      "cost_uusdc": 10000,
+      "latency_ms": 51,
+      "signal_hash": "0x1111111111111111111111111111111111111111111111111111111111111111",
+      "signal_verified": false
+    },
+    {
+      "intent": "SANCTIONS_SCREENING_MATCH",
+      "points": 0,
+      "flags": [
+        "no sanctions match"
+      ],
+      "miner": [
+        "mock-miner"
+      ],
+      "cost_uusdc": 10000,
+      "latency_ms": 51,
+      "signal_hash": "0x2222222222222222222222222222222222222222222222222222222222222222",
+      "signal_verified": false
+    },
+    {
+      "intent": "SOCIAL_BOT_DETECTION",
+      "points": 5,
+      "flags": [
+        "verdict: likely_human"
+      ],
+      "miner": [
+        "mock-miner"
+      ],
+      "cost_uusdc": 10000,
+      "latency_ms": 51,
+      "signal_hash": "0x3333333333333333333333333333333333333333333333333333333333333333",
+      "signal_verified": false
+    }
+  ],
+  "cost": {
+    "billed_uusdc": 40000,
+    "billed_usd": 0.04,
+    "asks": 4,
+    "cap_usd": 1,
+    "note": "testnet USDC; gas $0 (key mode) / Sepolia test ETH (wallet mode)"
+  },
+  "elapsed_ms": 54,
+  "mode": "dry-run-mock",
+  "generated_at": "2026-11-24T22:49:12.711Z",
+  "signals_unverified": false,
+  "dry_run": true,
+  "verification_hash": "0xa81297d3ab364cd068e2a6cbc6e684c22514adfbf0a1c0ef743da5a5430b82c6",
+  "signed_by": "0xc94fEeEeAaaD11c1BedC5f507a9b51bFD1CFE841",
+  "signature": "0x1865d0f04eee84f076b761a51b8ff6d2a330a31f52618535ca30acb2206705e17ff4f54752feee575d6cf47478c7f03753c56e5f14b37347abd75d34b6a5e75b1b"
+}

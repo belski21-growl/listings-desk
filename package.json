@@ -1,0 +1,16 @@
+{
+  "name": "telegraph-hackathon",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@telegraphprotocol/telegraph-protocol-mcp": "^2.3.0",
+    "ethers": "^6.17.0"
+  }
+}
