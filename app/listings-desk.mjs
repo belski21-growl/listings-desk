@@ -268,8 +268,24 @@ async function main() {
         await new Promise((r) => setTimeout(r, 50));
         raw = { status: 200, body: mockAnswer(spec.key, a) };
       } else if (api) {
-        const res = await api.askAuto({ ...body, max_budget_usdc: MAX_BUDGET_UUSDC });
-        raw = { status: 200, body: res };
+        // Backend /engine/ask rejects max_budget_usdc (400 "property max_budget_usdc
+        // should not exist", 25 Nov 2026) — omit it: one miner per ask, billed ~$0.01
+        // each. Matches the official MCP server's routedAskBody for a budget below
+        // the $0.01 floor. Paid run #1 failed 4/4 on this field with $0 billed.
+        const res = await api.askAuto({ ...body });
+        // /engine/ask (key mode) nests the answer under res.result: { result: <answer
+        // payload>, signal_hash, payments: [{miner, amount_uusdc}], cost_usd,
+        // miner_name }. Proven by the onchain probe 25 Nov 12:52 (TxLens,
+        // balance_gwei 0, signal_hash 0xd84a56dd…, payments 10000 uusdc). The desk's
+        // v1 shape expects { answer, fulfillment: {status, payments}, signal_hash }
+        // at top level, so normalize here. Paid run #2 failed 4/4 on this mismatch
+        // (200s discarded, $0.07 unbilled). A 200 without res.result is not a
+        // completed answer — leave it un-normalized so the ok check below rejects it.
+        const r0 = res?.result && typeof res.result === "object" ? res.result : null;
+        const norm = r0 && r0.result !== undefined
+          ? { answer: r0.result, fulfillment: { status: "complete", payments: r0.payments ?? [], signal_hash: r0.signal_hash ?? null }, signal_hash: r0.signal_hash ?? null, miner_name: r0.miner_name ?? null, cost_usd: r0.cost_usd ?? null }
+          : { answer: undefined, fulfillment: null, signal_hash: null, _raw: res };
+        raw = { status: 200, body: norm };
       } else {
         raw = await payer.post("/engine/v1/ask", { ...body, max_budget_usdc: MAX_BUDGET_UUSDC });
       }
@@ -288,7 +304,7 @@ async function main() {
   const failed = results.filter((r) => !r.ok);
   if (failed.length) {
     for (const f of failed) console.error(`ASK FAILED ${f.spec.intent}: ${f.error || `HTTP ${f.status}`}`);
-    fail(4, `${failed.length}/4 Telegraph asks failed — no memo produced (failed asks are never billed by the protocol)`);
+    fail(4, `${failed.length}/4 Telegraph asks failed — no memo produced (note: failed/504 asks can still accrue unbilled escrow spend — check balance)`);
   }
 
   // --- verify signals + ledger ---

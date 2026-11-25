@@ -18,7 +18,8 @@ on 25 Nov 2026. Network: **testnet** (Ethereum Sepolia escrow). No mainnet, no r
 ```
 token address ──► validate (EIP-55) + eth_getCode on chain
         │
-        ├──► 4 parallel Telegraph asks (POST /engine/v1/ask, max $0.05 budget each)
+        ├──► 4 parallel Telegraph asks (POST /engine/ask on backend, key mode;
+        │      POST /engine/v1/ask on devnode, wallet mode; $1.00/run cap)
         │      paid from escrow: Anjoman API key (no gas) or burner-wallet escrow (Sepolia)
         │      each answer carries miner provenance + payments + signal_hash
         ├──► re-verify every signal: GET /engine/v1/signal/{hash}
@@ -29,8 +30,12 @@ token address ──► validate (EIP-55) + eth_getCode on chain
 
 Payment code is the **official** `@telegraphprotocol/telegraph-protocol-mcp`
 package (v2.3.0) — `Payer` (wallet escrow) and `AnjomanApi` (key mode) — not a
-reimplementation. Spending caps: $0.05/ask, $1.00/run. A failed ask is never
-billed (protocol rule); on any ask failure no memo is produced.
+reimplementation. Spending cap: $1.00/run. Note: the backend rejects a
+`max_budget_usdc` field on `/engine/ask`, so key mode sends no budget and
+each ask goes to the miners the node routes (1–3 per intent, ~$0.01 each).
+Failed asks are NOT free on this node — we measured $0.19 in unbilled spend
+across three runs and two probes, including a 504 audit ask ($0.02); on any
+ask failure no memo is produced.
 
 ## Run it
 
@@ -57,10 +62,10 @@ Flags: `--chain ethereum|polygon|arbitrum` (default ethereum),
 ## Funding the paid run (2 minutes, in the browser)
 
 Recommended — **Anjoman API key, no gas, no wallet:**
-1. Sign in at https://anjoman.ai → Dashboard → **Faucet** → claim 1 test USDC/day.
+1. Sign in at https://anjoman.ai → Dashboard → **Faucet** → claim 5 test USDC per claim (1 claim per 24h).
 2. Dashboard → **API keys** → create a key (`anjoman_…`).
-3. `TELEGRAPH_API_KEY=anjoman_…` and run. Asks pay from the Anjoman escrow
-   (~$0.01 each; 4 asks ≈ $0.04 per memo).
+3. Deposit the faucet USDC into escrow first (the key draws from escrow; $4 covered every run here), then `TELEGRAPH_API_KEY=anjoman_…` and run. Asks pay from the Anjoman escrow
+   (~$0.01 each; 4 asks ≈ $0.09 per live memo — audit $0.01, on-chain $0.02, sanctions $0.03, social $0.03).
 
 Alternative — **burner-wallet escrow** (needs Sepolia ETH for gas):
 mint test USDC `0xcc194e1a843B658526D0D5C431f670028582Ae17` (`mint(address,uint256)`,
@@ -82,15 +87,20 @@ route needs a login faucet or the Anjoman path above.
 
 ## Evidence
 
+- `evidence/memo-A0b86991-1795586082867.json` — **live paid memo (USDC, LIST 18/100, $0.09, 25 Nov 2026, block 26490229, 4/4 signals verified)**
+- `evidence/ledger.jsonl` — live paid ledger rows (4 asks, miners + costs + signal hashes)
 - `evidence/memo-dryrun-usdc.json` — dry-run memo (USDC, LIST 18/100, cost $0.04 mock)
 - `evidence/ledger-dryrun.jsonl` — dry-run ledger rows (mock miners)
-- `evidence/ledger.jsonl` — live paid ledger rows (written on a funded run)
-- `evidence/memo-*.json` — live memos (written on a funded run)
+- `TUTORIAL.md` — "Build an autonomous listings desk on Telegraph in 30 minutes"
 - `app/burner-wallet.json` (mode 600) — fresh burner, 0 balance, testnet only
 
 ## Known limits (honest)
 
-- Paid end-to-end run not yet executed: funding needs the Anjoman key step above.
+- Paid end-to-end run EXECUTED 25 Nov 2026 12:54 WIB: USDC memo LIST 18/100,
+  $0.09, 82 s, 4/4 signals verified (see Evidence). Two earlier runs failed
+  first (400 on `max_budget_usdc`, then a response-shape mismatch) — both
+  fixed in the desk; the audit ask once returned HTTP 504 (backend gateway
+  timeout ~60 s) and was still billed $0.02.
 - `SMART_CONTRACT_AUDIT_GENERAL` has 20 miners but lifecycle `registered`
   (not `active`); the node routes it via its LLM pick when unranked.
 - `ONCHAIN_METRIC_VERIFY` currently buys the `balance` metric only;

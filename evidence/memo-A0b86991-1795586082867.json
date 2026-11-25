@@ -1,0 +1,91 @@
+{
+  "kind": "telegraph-h2-listings-desk-risk-memo",
+  "network": "testnet",
+  "token": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+  "chain": "ethereum",
+  "block": 26490229,
+  "entity": "Centre Consortium (USDC)",
+  "handle": "@circle",
+  "question": "Should we list this token?",
+  "verdict": "LIST",
+  "risk_score": 18,
+  "risk_max": 100,
+  "checks": [
+    {
+      "intent": "SMART_CONTRACT_AUDIT",
+      "points": 0,
+      "flags": [
+        "no high-risk flags in answer"
+      ],
+      "miner": [
+        "secrev-circl-last"
+      ],
+      "cost_uusdc": 10000,
+      "latency_ms": 64222,
+      "signal_hash": "0x6db98538e49c3fe4641ccab657f37bcd4fa3c189f121f7d99b37f6a1fa5a839d",
+      "signal_verified": true
+    },
+    {
+      "intent": "ONCHAIN_METRIC_VERIFY",
+      "points": 0,
+      "flags": [
+        "native balance 0 gwei (normal for a token contract)"
+      ],
+      "miner": [
+        "txlens",
+        "chainsight-oracle"
+      ],
+      "cost_uusdc": 20000,
+      "latency_ms": 48867,
+      "signal_hash": "0x9c4a2134d7fdba1f0ff1689bbd8d97e3ec14c4b475e07e5b7bd20163b5c5cc39",
+      "signal_verified": true
+    },
+    {
+      "intent": "SANCTIONS_SCREENING_MATCH",
+      "points": 0,
+      "flags": [
+        "no sanctions match"
+      ],
+      "miner": [
+        "san-os-ofac",
+        "san-un-list",
+        "zk-sanctions"
+      ],
+      "cost_uusdc": 30000,
+      "latency_ms": 42761,
+      "signal_hash": "0x1199549b9e838e6ee42ab30d658973d2983c6efdd30ae435614045573a86c580",
+      "signal_verified": true
+    },
+    {
+      "intent": "SOCIAL_BOT_DETECTION",
+      "points": 18,
+      "flags": [
+        "verdict: likely_bot (score 0.8)"
+      ],
+      "miner": [
+        "chainsight-oracle",
+        "a1-preflight",
+        "txlens"
+      ],
+      "cost_uusdc": 30000,
+      "latency_ms": 34802,
+      "signal_hash": "0xae30ada94013c10e8e4f236eb07590b198c96e33aadea011259e1e5222174da8",
+      "signal_verified": true
+    }
+  ],
+  "cost": {
+    "billed_uusdc": 90000,
+    "billed_usd": 0.09,
+    "asks": 4,
+    "cap_usd": 1,
+    "note": "testnet USDC; gas $0 (key mode) / Sepolia test ETH (wallet mode)"
+  },
+  "elapsed_ms": 81919,
+  "mode": "anjoman-key",
+  "generated_at": "2026-11-25T05:54:42.803Z",
+  "signals_unverified": false,
+  "dry_run": false,
+  "verification_hash": "0x0549c536d02748e672c26b3e58f683aa7a40615529f03ac7bebe01fe29cb562b",
+  "signed_by": "0x43eF891603390C899A1330d87045192E20E84076",
+  "signature": "0xaf885db4612a57c6211a943dba19e32986d5e71d6f427464d46498df2a1d93524f7cd2e586d823e00f69d56f5ca3f9543fe74eafe9100ac4bb1c0443ee39f1361b"
+}
